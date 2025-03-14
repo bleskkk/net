@@ -1,43 +1,60 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internet Speed Tester</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Internet Speed Tester</h1>
+    <p id="message">Click to test speed</p>
+    <p id="speed" class="hidden"></p>
+    <button onclick="testSpeed()">Test Speed</button>
 
-export default function SpeedTester() {
-  const [speed, setSpeed] = useState(null);
-  const [message, setMessage] = useState("Click to test speed");
+    <script>
+        async function testSpeed() {
+            const messageElement = document.getElementById("message");
+            const speedElement = document.getElementById("speed");
+            const fileUrl = "https://speed.hetzner.de/100MB.bin"; // Test file
+            messageElement.textContent = "Testing...";
 
-  const testSpeed = async () => {
-    setMessage("Testing...");
-    const fileUrl = "https://speed.hetzner.de/100MB.bin"; // Test file
-    const startTime = performance.now();
-    
-    try {
-      const response = await fetch(fileUrl, { method: "GET", cache: "no-cache" });
-      await response.blob();
-      const endTime = performance.now();
-      
-      const duration = (endTime - startTime) / 1000; // Convert to seconds
-      const fileSizeMb = 100; // 100MB file
-      const calculatedSpeed = (fileSizeMb / duration).toFixed(2);
-      setSpeed(calculatedSpeed);
-      
-      let funnyMessage = "";
-      if (calculatedSpeed < 5) funnyMessage = "Snail Mode 🐌";
-      else if (calculatedSpeed < 20) funnyMessage = "Meh... 🚶";
-      else if (calculatedSpeed < 50) funnyMessage = "Zoom Zoom 🚗💨";
-      else funnyMessage = "Warp Speed! 🚀";
-      
-      setMessage(funnyMessage);
-    } catch (error) {
-      setMessage("Error testing speed 😢");
-    }
-  };
+            const startTime = performance.now();
+            try {
+                const response = await fetch(fileUrl, { method: "GET", cache: "no-cache" });
+                await response.blob();
+                const endTime = performance.now();
 
-  return (
-    <div className="flex flex-col items-center justify-center h-screen space-y-4">
-      <h1 className="text-2xl font-bold">Internet Speed Tester</h1>
-      <p className="text-xl">{message}</p>
-      {speed && <p className="text-lg">Speed: {speed} Mbps</p>}
-      <Button onClick={testSpeed}>Test Speed</Button>
-    </div>
-  );
-}
+                const duration = (endTime - startTime) / 1000; // Convert to seconds
+                const fileSizeMb = 100; // 100MB file
+                const calculatedSpeed = (fileSizeMb / duration).toFixed(2);
+
+                speedElement.textContent = `Speed: ${calculatedSpeed} Mbps`;
+                speedElement.classList.remove("hidden");
+
+                let funnyMessage = "";
+                if (calculatedSpeed < 5) funnyMessage = "Snail Mode 🐌";
+                else if (calculatedSpeed < 20) funnyMessage = "Meh... 🚶";
+                else if (calculatedSpeed < 50) funnyMessage = "Zoom Zoom 🚗💨";
+                else funnyMessage = "Warp Speed! 🚀";
+
+                messageElement.textContent = funnyMessage;
+            } catch (error) {
+                messageElement.textContent = "Error testing speed 😢";
+            }
+        }
+    </script>
+</body>
+</html>
